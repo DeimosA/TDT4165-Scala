@@ -6,7 +6,7 @@ object Bank {
   
   def transaction(from: Account, to: Account, amount: Double): Unit = ??? //Implement
   
-  def getUniqueId: Int = {
+  def getUniqueId: Int = this.synchronized {
     idCounter += 1
     idCounter
   }

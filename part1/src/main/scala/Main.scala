@@ -14,11 +14,12 @@ object Main extends App {
   val a1 = new Account(100)
   val a2 = new Account(200)
   
-  val t1 = thread(println("virke"))
+  val t1 = thread(Bank transaction(a2, a1, 150))
   val t2 = thread(Bank transaction(a1, a2, 50))
+  val t3 = thread(Bank transaction(a1, a2, 75))
   
   t1.join()
   t2.join()
-  println(a1.getBalanceAmount)
-  println(a2.getBalanceAmount)
+  t3.join()
+  println(a1.getBalanceAmount + " " + a2.getBalanceAmount)
 }

@@ -1,9 +1,11 @@
 import scala.concurrent.forkjoin.ForkJoinPool
 import scala.concurrent.ExecutionContext
+import scala.annotation.tailrec
+import exceptions._
 
 class Bank(val allowedAttempts: Integer = 3) {
 
-  private val uid = ???
+  private val uid = 0
   private val transactionsQueue: TransactionQueue = new TransactionQueue()
   private val processedTransactions: TransactionQueue = new TransactionQueue()
   private val executorContext = ExecutionContext.global
@@ -20,8 +22,13 @@ class Bank(val allowedAttempts: Integer = 3) {
     idCounter
   }
 
+  Main.thread(processTransactions)
+  @tailrec
   private def processTransactions: Unit = {
     executorContext.execute(transactionsQueue.pop)
+    //Thread.sleep(100)
+    
+    processTransactions
   }
 
   def addAccount(initialBalance: Double): Account = {

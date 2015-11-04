@@ -38,6 +38,7 @@ class Transaction(val transactionsQueue: TransactionQueue,
                   val allowedAttemps: Int) extends Runnable {
 
   var status: TransactionStatus.Value = TransactionStatus.PENDING
+  var failCount: Int = 0
 
   override def run: Unit = {
     
@@ -46,13 +47,32 @@ class Transaction(val transactionsQueue: TransactionQueue,
       to deposit amount
     }
     
-    if (from.uid < to.uid) from synchronized {
-      to synchronized {
-        doTransaction
+    try {
+      if (from.uid < to.uid) from synchronized {
+        to synchronized {
+          doTransaction
+        }
+      } else to synchronized {
+        from synchronized {
+          doTransaction
+        }
       }
-    } else to synchronized {
-      from synchronized {
-        doTransaction
+      
+      this.status = TransactionStatus.SUCCESS
+      processedTransactions.push(this)
+      
+    } catch {
+      case iae: IllegalAmountException => {
+        this.status = TransactionStatus.FAILED
+        processedTransactions.push(this)
+      }
+      case nsfe: NoSufficientFundsException => {
+        failCount += 1
+        if (failCount < allowedAttemps) transactionsQueue.push(this)
+        else {
+          this.status = TransactionStatus.FAILED
+          processedTransactions.push(this)
+        }
       }
     }
     

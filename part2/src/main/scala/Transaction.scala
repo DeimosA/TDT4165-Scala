@@ -1,6 +1,10 @@
 
 import exceptions._
 import scala.collection.mutable
+import scala.collection.mutable.Queue
+import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
+import scala.collection.Iterator
+import scala.collection.JavaConversions._
 
 object TransactionStatus extends Enumeration {
   val SUCCESS, PENDING, FAILED = Value
@@ -8,26 +12,26 @@ object TransactionStatus extends Enumeration {
 
 class TransactionQueue {
   
-  private var queue = List[Transaction]()
+  private val queue = new LinkedBlockingQueue[Transaction]()
   
   // Remove and return the first element from the queue
   def pop: Transaction = {
-    val tail = queue.last;
-    queue = queue.init;
-    tail
+    val front = queue.take;
+
+    front
   }
 
   // Return whether the queue is empty
   def isEmpty: Boolean = queue.isEmpty
 
   // Add new element to the back of the queue
-  def push(t: Transaction): Unit = queue = t :: queue
+  def push(t: Transaction): Unit = queue.put(t);
 
   // Return the first element from the queue without removing it
-  def peek: Transaction = queue head
+  def peek: Transaction = queue.peek();
 
   // Return an iterator to allow you to iterate over the queue
-  def iterator: Iterator[Transaction] = queue.iterator
+  def iterator: Iterator[Transaction] = queue.iterator();
 }
 
 class Transaction(val transactionsQueue: TransactionQueue,

@@ -1,7 +1,6 @@
 
 import exceptions._
 import scala.collection.mutable
-import scala.collection.mutable.Queue
 import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 import scala.collection.Iterator
 import scala.collection.JavaConversions._
@@ -17,7 +16,6 @@ class TransactionQueue {
   // Remove and return the first element from the queue
   def pop: Transaction = {
     val front = queue.take;
-
     front
   }
 

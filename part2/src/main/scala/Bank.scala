@@ -26,7 +26,7 @@ class Bank(val allowedAttempts: Integer = 3) {
   @tailrec
   private def processTransactions: Unit = {
     executorContext.execute(transactionsQueue.pop)
-    //Thread.sleep(100)
+    Thread.sleep(10)
     
     processTransactions
   }

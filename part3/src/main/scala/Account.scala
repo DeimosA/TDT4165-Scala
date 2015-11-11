@@ -23,7 +23,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
   }
 
   def getTransactions: List[Transaction] = {
-    // Should return a list of all Transaction-objects stored in transactions
+    // Should return a list of all Transaction-objects stored in transactions 
     ???
   }
 
@@ -87,7 +87,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
       ???
     }
 
-    case BalanceRequest => ??? // Should return current balance
+    case BalanceRequest => sender ! getBalanceAmount // Should return current balance
 
     case t: Transaction => {
       // Handle incoming transaction

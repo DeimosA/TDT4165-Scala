@@ -24,19 +24,19 @@ class Bank(val bankId: String) extends Actor {
     BankManager.createAccount(generateAccountId, bankId, initialBalance)
   }
 
-  def findAccount(accountId: String): Option[ActorRef] = {
+  def findAccount(accountId: String): ActorRef = {
     // Use BankManager to look up an account with ID accountId
-    ???
+    BankManager.findAccount(bankId, accountId)
   }
 
-  def findOtherBank(bankId: String): Option[ActorRef] = {
+  def findOtherBank(bankId: String): ActorRef = {
     // Use BankManager to look up a different bank with ID bankId
-    ???
+    BankManager.findBank(bankId);
   }
 
   override def receive = {
     case CreateAccountRequest(initialBalance) => sender ! createAccount(initialBalance) // Create a new account
-    case GetAccountRequest(id) => ??? // Return account
+    case GetAccountRequest(id) => sender ! findAccount(id) // Return account
     case IdentifyActor => sender ! this
     case t: Transaction => processTransaction(t)
 

@@ -18,6 +18,8 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
   val balance = new Balance(initialBalance)
 
+  lazy val bank = BankManager.findBank(bankId)
+
   def getFullAddress: String = {
     bankId + accountId
   }
@@ -52,7 +54,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
   def sendTransactionToBank(t: Transaction): Unit = {
     // Should send a message containing t to the bank of this account
-    ???
+    bank ! t
   }
 
   def transferTo(accountNumber: String, amount: Double): Transaction = {
@@ -93,8 +95,15 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
     case BalanceRequest => sender ! getBalanceAmount // Should return current balance
 
     case t: Transaction => {
-      // Handle incoming transaction
-      ???
+    	// Handle incoming transaction
+    	try {
+    		deposit(t.amount)
+    		t.status = TransactionStatus.SUCCESS
+    	} catch {
+    	  case _: IllegalAmountException =>
+    	    t.status = TransactionStatus.FAILED
+    	}
+
     }
     
     case msg => ???
